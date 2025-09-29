@@ -1,35 +1,32 @@
 package com.notion.service.core.controllers;
 
 import com.notion.service.core.models.NoteLabel;
-import com.notion.service.core.repositories.NoteLabelsRepository;
+import com.notion.service.core.models.RequestStatusDTO;
+import com.notion.service.core.services.LabelsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// TODO: Return a status DTO to be displayed as a toast in the UI instead of returning the entire object / void
-@RestController(value = "labels")
+@RestController
+@RequestMapping(value = "labels")
 public class LabelsController {
+
     @Autowired
-    private NoteLabelsRepository repository;
+    private LabelsService labelsService;
 
     @GetMapping(value = "/all")
-    public List<NoteLabel> getAllLabels() {
-        return repository.findAll();
+    public RequestStatusDTO<List<NoteLabel>> getAllLabels() {
+        return labelsService.getAllLabels();
     }
 
-    @PostMapping(value = "create")
-    public void createLabel(@RequestBody NoteLabel label) {
-        repository.save(label);
+    @PostMapping(value = "/create")
+    public RequestStatusDTO<NoteLabel> createLabel(@RequestBody NoteLabel label) {
+        return labelsService.createLabel(label);
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Void> deleteLabel(@PathVariable String id) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public RequestStatusDTO<Void> deleteLabel(@PathVariable String id) {
+        return labelsService.deleteLabel(id);
     }
 }
