@@ -21,12 +21,17 @@ public class NotesService {
     @Autowired
     private NotesRepository repository;
 
-    public RequestStatusDTO<List<Note>> getAllActiveNotes() {
-        List<Note> allNotes = repository.findAllByStatus(
-                NoteStatus.ACTIVE,
-                Sort.by(Sort.Direction.DESC, "createdAt")
-        );
-        if (allNotes.isEmpty())
+    public RequestStatusDTO<List<Note>> getAllActiveNotes(List<String> tags) {
+        List<Note> allNotes = null;
+
+        NoteStatus activeStatus = NoteStatus.ACTIVE;
+        Sort recencySort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        allNotes = tags == null || tags.isEmpty() ?
+                repository.findAllByStatus(activeStatus, recencySort) :
+                repository.findAllByTagsContainingAllAndStatus(tags, activeStatus, recencySort);
+
+        if (allNotes == null || allNotes.isEmpty())
             return new RequestStatusDTO<>(RequestStatusEntries.NO_NOTES, null);
         return new RequestStatusDTO<>(RequestStatusEntries.SUCCESS, allNotes);
     }

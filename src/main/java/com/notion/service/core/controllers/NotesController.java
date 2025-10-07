@@ -12,7 +12,9 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "notes")
 public class NotesController {
+
     private final NotesService service;
+
     @Autowired
     private NotesRepository repository;
 
@@ -21,8 +23,8 @@ public class NotesController {
     }
 
     @GetMapping(value = "/listAll")
-    public RequestStatusDTO<List<Note>> getAllActiveNotes() {
-        return service.getAllActiveNotes();
+    public RequestStatusDTO<List<Note>> getAllActiveNotes(@RequestParam(required = false) List<String> tags) {
+        return service.getAllActiveNotes(tags);
     }
 
     @GetMapping(value = "/listAllTrash")
